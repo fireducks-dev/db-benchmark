@@ -45,7 +45,8 @@ solution.dict = {list(
   "R-arrow" = list(name=c(short="R-arrow", long="R-arrow"), color=c(strong="aquamarine3", light="aquamarine1")),
   "duckdb" = list(name=c(short="duckdb", long="DuckDB"), color=c(strong="#ddcd07", light="#fff100")),
   "duckdb-latest" = list(name=c(short="duckdb-latest", long="duckdb-latest"), color=c(strong="#ddcd07", light="#fff100")),
-  "datafusion" = list(name=c(short="datafusion", long="Datafusion"), color=c(strong="deepskyblue4", light="deepskyblue3"))
+  "datafusion" = list(name=c(short="datafusion", long="Datafusion"), color=c(strong="deepskyblue4", light="deepskyblue3")),
+  "fireducks" = list(name=c(short="fireducks", long="FireDucks"), color=c(strong="darkgreen", light="forestgreen"))
 )}
 #barplot(rep(c(0L,1L,1L), length(solution.dict)),
 #        col=rev(c(rbind(sapply(solution.dict, `[[`, "color"), "black"))),
@@ -246,6 +247,18 @@ groupby.syntax.dict = {list(
     "largest two v3 by id6" = "SELECT id6, v3 from (SELECT id6, v3, row_number() OVER (PARTITION BY id6 ORDER BY v3 DESC) AS row FROM x) t WHERE row <= 2",
     "regression v1 v2 by id2 id4" = "SELECT id2, id4, POW(CORR(v1, v2), 2) AS r2 FROM tbl GROUP BY id2, id4",
     "sum v3 count by id1:id6" = "SELECT id1, id2, id3, id4, id5, id6, SUM(v3) as v3, COUNT(*) AS cnt FROM x GROUP BY id1, id2, id3, id4, id5, id6"
+  )},
+  "fireducks" = {c(
+    "sum v1 by id1" = "DF.groupby('id1', as_index=False, sort=False, observed=True, dropna=False).agg({'v1':'sum'})",
+    "sum v1 by id1:id2" = "DF.groupby(['id1','id2'], as_index=False, sort=False, observed=True, dropna=False).agg({'v1':'sum'})",
+    "sum v1 mean v3 by id3" = "DF.groupby('id3', as_index=False, sort=False, observed=True, dropna=False).agg({'v1':'sum', 'v3':'mean'})",
+    "mean v1:v3 by id4" = "DF.groupby('id4', as_index=False, sort=False, observed=True, dropna=False).agg({'v1':'mean', 'v2':'mean', 'v3':'mean'})",
+    "sum v1:v3 by id6" = "DF.groupby('id6', as_index=False, sort=False, observed=True, dropna=False).agg({'v1':'sum', 'v2':'sum', 'v3':'sum'})",
+    "median v3 sd v3 by id4 id5" = "DF.groupby(['id4','id5'], as_index=False, sort=False, observed=True, dropna=False).agg({'v3': ['median','std']})",
+    "max v1 - min v2 by id3" = "DF.groupby('id3', as_index=False, sort=False, observed=True, dropna=False).agg({'v1':'max', 'v2':'min'}).assign(range_v1_v2=lambda x: x['v1']-x['v2'])[['id3','range_v1_v2']]",
+    "largest two v3 by id6" = "DF[~DF['v3'].isna()][['id6','v3']].sort_values('v3', ascending=False).groupby('id6', as_index=False, sort=False, observed=True, dropna=False).head(2)",
+    "regression v1 v2 by id2 id4" = "DF[['id2','id4','v1']].groupby(['id2','id4'], as_index=False, sort=False, observed=True, dropna=False)[['v1']].corrwith(x['v2']).assign(r2=lambda x: x['v1'] * x['v1'])[['id2', 'id4', 'r2']]",
+    "sum v3 count by id1:id6" = "DF.groupby(['id1','id2','id3','id4','id5','id6'], as_index=False, sort=False, observed=True, dropna=False).agg({'v3':'sum', 'v1':'size'})"
   )}
 )}
  groupby.query.exceptions = {list(
@@ -440,6 +453,13 @@ join.syntax.dict = {list(
     "medium outer on int" = "SELECT x.id1 as xid1, medium.id1 as mediumid1, x.id2, x.id3, x.id4 as xid4, medium.id4 as mediumid4, x.id5 as xid5, medium.id5 as mediumid5, x.id6, x.v1, medium.v2 FROM x LEFT JOIN medium ON x.id2 = medium.id2",
     "medium inner on factor" = "SELECT x.id1 as xid1, medium.id1 as mediumid1, x.id2, x.id3, x.id4 as xid4, medium.id4 as mediumid4, x.id5 as xid5, medium.id5 as mediumid5, x.id6, x.v1, medium.v2 FROM x LEFT JOIN medium ON x.id5 = medium.id5",
     "big inner on int" = "SELECT x.id1 as xid1, large.id1 as largeid1, x.id2 as xid2, large.id2 as largeid2, x.id3, x.id4 as xid4, large.id4 as largeid4, x.id5 as xid5, large.id5 as largeid5, x.id6 as xid6, large.id6 as largeid6, x.v1, large.v2 FROM x LEFT JOIN large ON x.id3 = large.id3"
+  )},
+  "fireducks" = {c(
+    "small inner on int" = "DF.merge(small, on='id1')",
+    "medium inner on int" = "DF.merge(medium, on='id2')",
+    "medium outer on int" = "DF.merge(medium, how='left', on='id2')",
+    "medium inner on factor" = "DF.merge(medium, on='id5')",
+    "big inner on int" = "DF.merge(big, on='id3')"
   )}
 )}
 join.query.exceptions = {list(
