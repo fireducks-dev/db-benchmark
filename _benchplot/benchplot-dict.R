@@ -46,7 +46,7 @@ solution.dict = {list(
   "duckdb" = list(name=c(short="duckdb", long="DuckDB"), color=c(strong="#ddcd07", light="#fff100")),
   "duckdb-latest" = list(name=c(short="duckdb-latest", long="duckdb-latest"), color=c(strong="#ddcd07", light="#fff100")),
   "datafusion" = list(name=c(short="datafusion", long="Datafusion"), color=c(strong="deepskyblue4", light="deepskyblue3")),
-  "fireducks" = list(name=c(short="fireducks", long="FireDucks"), color=c(strong="darkgreen", light="forestgreen"))
+    "fireducks" = list(name=c(short="fireducks", long="FireDucks"), color=c(strong="darkgreen", light="forestgreen"))
 )}
 #barplot(rep(c(0L,1L,1L), length(solution.dict)),
 #        col=rev(c(rbind(sapply(solution.dict, `[[`, "color"), "black"))),

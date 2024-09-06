@@ -6,11 +6,12 @@ import os
 import gc
 import timeit
 import fireducks.pandas as pd
+import fireducks as fd
 
 exec(open("./_helpers/helpers.py").read())
 
-ver = pd.__version__
-git = pd.__git_version__
+ver = fd.__version__
+git = fd.__git_version__
 task = "join"
 solution = "fireducks"
 fun = ".merge"
